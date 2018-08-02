@@ -1,0 +1,67 @@
+<!DOCTYPE html
+PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<!-- 
+This is a skeleton html file that you can use to get you started on each new 
+HTML project
+
+Name: Your Name Here
+Class: CIS 3303
+Section: x
+-->
+<html>
+
+<head>
+  <title>imgstream</title>
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+  body {
+    margin: 0;
+    padding: 0;
+  }
+  .overlay {
+    position: absolute;
+    width: 1920px;
+    height: 1080px;
+  }
+  </style>
+</head>
+ 
+<body>
+<div class="container">
+  <div class="row" id="vmList">
+  </div>
+</div>
+
+  <div class="container" id="vmListx">
+  </div>
+  <script>
+  $(function() {
+    var socket = io.connect();
+    var vmnumber = 4;
+    console.log("Connect to socket, " + vmnumber + " computers");
+
+    function drawImages(socket, img) {
+     socket.on(img, function(info) {
+      if (info.image) {
+        console.log("Read image from server");
+        document.getElementById(img).innerHTML = "<img class=\"" + img + "\" src=\"data:image/png;base64, "+info.buffer+"\" alt=\"\" width=\"100%\" height=\"100%\"/ class=\"thumbnail img-responsive\">"
+          +"</div>";
+        console.log(info.image);
+      }
+     });
+    }
+    for (i = 1; i <= vmnumber; i++) {
+      var str = "" + i;
+      var pad = "000";
+      var img = "image" + pad.substring(0, pad.length - str.length) + str;
+      console.log("image name: " + img);
+      document.getElementById("vmList").innerHTML += '<div id="' + img + '" class="overlay"></div>';
+      drawImages(socket, img);
+   }
+  });
+  </script>
+</body>
+
+</html>
