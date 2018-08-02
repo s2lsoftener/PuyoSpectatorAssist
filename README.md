@@ -14,4 +14,5 @@ Creates an overlay that identifies potential chains
 ## ToDo
 * Add detection for NEXT Window movement so the prediction is only generated in-between moves. It makes the overlay less distracting.
 * Improve accuracy of Puyo detection with OpenCV(?) somehow(?). Pre-process the player fields with some sort of thresholding, or something else fancy with OpenCV. Currently, the script will sometimes mistake the character backgrounds as Puyos.
+* Define pre-set settings for Puyo Puyo Tetris.
 * Actually learn how node and javascript works so I actually understand how server.js works lol. Right now it's just using template code I found somewhere else: https://github.com/yanalavishnu/imgstream
