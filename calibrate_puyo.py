@@ -1,3 +1,4 @@
+import json
 import numpy as np
 import os.path
 import mss
@@ -31,53 +32,67 @@ def getCellColors(field):
     return colordata
 
 
-# Calibrate Puyo colors using test_field.png
-test_field = Image.open(directory + '/img/calibration/test_field.png')
-color_data = getCellColors(test_field)
-purple = np.array([color_data[0][5],
-                   color_data[0][0],
-                   color_data[1][3],
-                   color_data[2][1],
-                   color_data[2][3],
-                   color_data[3][1],
-                   color_data[3][4]])
-red = np.array([color_data[0][1],
-                color_data[0][3],
-                color_data[1][1],
-                color_data[1][4],
-                color_data[1][5],
-                color_data[3][0],
-                color_data[3][2]])
-green = np.array([color_data[2][4],
-                  color_data[4][1],
-                  color_data[6][3],
-                  color_data[10][1],
-                  color_data[10][2],
-                  color_data[10][5]])
-blue = np.array([color_data[0][4],
-                 color_data[2][0],
-                 color_data[3][5],
-                 color_data[4][0],
-                 color_data[4][2],
-                 color_data[5][1],
-                 color_data[5][4]])
-yellow = np.array([color_data[1][0],
-                   color_data[2][5],
-                   color_data[3][3],
-                   color_data[5][0],
-                   color_data[5][3],
-                   color_data[5][5]])
-ojama = np.array([color_data[4][3],
-                  color_data[5][2],
-                  color_data[11][5]])
-RGB_data = {'P': np.mean(purple, axis=0),
-            'R': np.mean(red, axis=0),
-            'G': np.mean(green, axis=0),
-            'B': np.mean(blue, axis=0),
-            'Y': np.mean(yellow, axis=0),
-            'J': np.mean(ojama, axis=0)}
+## Calibrate Puyo colors using a sample field with all 5 colors and ojama.
+if __name__ == '__main__':
+    test_field = Image.open(directory + '/img/calibration/test_field.png')
+    color_data = getCellColors(test_field)
+    # Manually identify the Puyo colors using zero-indexed matrix coord
+    # Top row with the Red X = 0.
+    # Left most column = 0.
+    purple = np.array([color_data[0][5],
+                    color_data[0][0],
+                    color_data[1][3],
+                    color_data[2][1],
+                    color_data[2][3],
+                    color_data[3][1],
+                    color_data[3][4]])
+    red = np.array([color_data[0][1],
+                    color_data[0][3],
+                    color_data[1][1],
+                    color_data[1][4],
+                    color_data[1][5],
+                    color_data[3][0],
+                    color_data[3][2]])
+    green = np.array([color_data[2][4],
+                    color_data[4][1],
+                    color_data[6][3],
+                    color_data[10][1],
+                    color_data[10][2],
+                    color_data[10][5]])
+    blue = np.array([color_data[0][4],
+                    color_data[2][0],
+                    color_data[3][5],
+                    color_data[4][0],
+                    color_data[4][2],
+                    color_data[5][1],
+                    color_data[5][4]])
+    yellow = np.array([color_data[1][0],
+                    color_data[2][5],
+                    color_data[3][3],
+                    color_data[5][0],
+                    color_data[5][3],
+                    color_data[5][5]])
+    ojama = np.array([color_data[4][3],
+                    color_data[5][2],
+                    color_data[11][5]])
+    RGB_data = {'P': np.mean(purple, axis=0),
+                'R': np.mean(red, axis=0),
+                'G': np.mean(green, axis=0),
+                'B': np.mean(blue, axis=0),
+                'Y': np.mean(yellow, axis=0),
+                'J': np.mean(ojama, axis=0)}
+    # Write JSON file with settings
+    for key, value in RGB_data.items():
+        RGB_data[key] = RGB_data[key].tolist()
+    settings = {"RGB_data": RGB_data}
+    json.dump(settings, open("puyo_settings.json","w"))
 
 
+## Load calibration from JSON file
+RGB_data = json.load(open("puyo_settings.json"))['RGB_data']
+
+
+# Guess a cell's color by referencing the above RGB triplets
 # Guess a cell's color by referencing the above RGB triplets
 def getPuyoColor(puyo, threshold=0.2):
     LL = 1 - threshold  # lower limit
@@ -113,25 +128,21 @@ def getPuyoColor(puyo, threshold=0.2):
 # Guess cell colors for a whole field
 def getFieldPuyoColors(field):
     color_data = getCellColors(field)
-    print('got color data')
-    # matrix = np.array([['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0'],
-    #                    ['0', '0', '0', '0', '0', '0']])
-    # print('made the matrix')
-    # for index1, row in enumerate(color_data):
-    #     for index2, col in enumerate(row):
-    #         matrix[index1 + 1, index2] = str(getPuyoColor(
-    #             color_data[index1][index2]))
+    matrix = np.array([['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0'],
+                       ['0', '0', '0', '0', '0', '0']])
+    for index1, row in enumerate(color_data):
+        for index2, col in enumerate(row):
+            matrix[index1 + 1, index2] = getPuyoColor(
+                color_data[index1][index2])
     return matrix
-
-

@@ -6,7 +6,7 @@ import mss
 from PIL import Image
 from PIL import ImageStat
 from calibrate_scrn import Player1, Player2, cell_width, cell_height
-from calibrate_puyo import getCellColors, RGB_data
+from calibrate_puyo import getCellColors, RGB_data, getPuyoColor, getFieldPuyoColors
 from chainsim import simulateChain, game_colors, exportToPN, applyGravity
 
 directory = os.path.dirname(os.path.abspath(__file__))
@@ -21,61 +21,6 @@ def getField(player):
             sct_img = sct.grab(Player2['board'])
             img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
     return img
-
-
-# Guess a cell's color by referencing the above RGB triplets
-def getPuyoColor(puyo, threshold=0.2):
-    LL = 1 - threshold  # lower limit
-    UL = 1 + threshold  # upper limit
-    if (puyo[0] > RGB_data['R'][0] * LL and puyo[0] < RGB_data['R'][0] * UL and
-        puyo[1] > RGB_data['R'][1] * LL and puyo[1] < RGB_data['R'][1] * UL and
-            puyo[2] > RGB_data['R'][2] * LL and puyo[2] < RGB_data['R'][2] * UL):
-        return str('R')
-    elif (puyo[0] > RGB_data['G'][0] * LL and puyo[0] < RGB_data['G'][0] * UL and
-          puyo[1] > RGB_data['G'][1] * LL and puyo[1] < RGB_data['G'][1] * UL and
-            puyo[2] > RGB_data['G'][2] * LL and puyo[2] < RGB_data['G'][2] * UL):
-        return str('G')
-    elif (puyo[0] > RGB_data['B'][0] * LL and puyo[0] < RGB_data['B'][0] * UL and
-          puyo[1] > RGB_data['B'][1] * LL and puyo[1] < RGB_data['B'][1] * UL and
-            puyo[2] > RGB_data['B'][2] * LL and puyo[2] < RGB_data['B'][2] * UL):
-        return str('B')
-    elif (puyo[0] > RGB_data['Y'][0] * LL and puyo[0] < RGB_data['Y'][0] * UL and
-          puyo[1] > RGB_data['Y'][1] * LL and puyo[1] < RGB_data['Y'][1] * UL and
-            puyo[2] > RGB_data['Y'][2] * LL and puyo[2] < RGB_data['Y'][2] * UL):
-        return str('Y')
-    elif (puyo[0] > RGB_data['P'][0] * LL and puyo[0] < RGB_data['P'][0] * UL and
-          puyo[1] > RGB_data['P'][1] * LL and puyo[1] < RGB_data['P'][1] * UL and
-            puyo[2] > RGB_data['P'][2] * LL and puyo[2] < RGB_data['P'][2] * UL):
-        return str('P')
-    elif (puyo[0] > RGB_data['J'][0] * LL and puyo[0] < RGB_data['J'][0] * UL and
-          puyo[1] > RGB_data['J'][1] * LL and puyo[1] < RGB_data['J'][1] * UL and
-            puyo[2] > RGB_data['J'][2] * LL and puyo[2] < RGB_data['J'][2] * UL):
-        return str('J')
-    else:
-        return str('0')
-
-
-# Guess cell colors for a whole field
-def getFieldPuyoColors(field):
-    color_data = getCellColors(field)
-    matrix = np.array([['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0'],
-                       ['0', '0', '0', '0', '0', '0']])
-    for index1, row in enumerate(color_data):
-        for index2, col in enumerate(row):
-            matrix[index1 + 1, index2] = getPuyoColor(
-                color_data[index1][index2])
-    return matrix
 
 
 # Try out chains
