@@ -61,6 +61,7 @@ def tryPuyos(matrix, colors=['R', 'G', 'B', 'Y', 'P']):
     return results
 
 
+# Open and resize image files
 transparent_bg = Image.open(directory + "/img/transparent_bg.png")
 red_ret = Image.open(directory + "/img/cursor/red_cursor.png")
 red_ret = red_ret.resize((cell_width, cell_height))
@@ -96,10 +97,10 @@ if __name__ == '__main__':
     starttime = time.time()
     while True:
         # Player 1, initialize values and images
-        p1_current = getFieldPuyoColors(getField(1))
-        p1_chaintests = tryPuyos(p1_current)
-        p1_chaintext = str('')
-        p1_overlay = copy.copy(transparent_bg)
+        p1_current = getFieldPuyoColors(getField(1))  # Get P1 field
+        p1_chaintests = tryPuyos(p1_current)  # Try Puyos in each column & simulate
+        p1_chaintext = str('')  # Leftover from an old output method
+        p1_overlay = copy.copy(transparent_bg) 
         p1_overlaynum = copy.copy(transparent_bg)
         numlines_p1 = 0
 
@@ -127,31 +128,31 @@ if __name__ == '__main__':
                                 col_rightedge, row_bottomedge)
                 if color[2] == 'R':
                     p1_overlay.paste(red_ret, reticule_loc)
-                if color[2] == 'G':
+                elif color[2] == 'G':
                     p1_overlay.paste(green_ret, reticule_loc)
-                if color[2] == 'B':
+                elif color[2] == 'B':
                     p1_overlay.paste(blue_ret, reticule_loc)
-                if color[2] == 'Y':
+                elif color[2] == 'Y':
                     p1_overlay.paste(yellow_ret, reticule_loc)
-                if color[2] == 'P':
+                elif color[2] == 'P':
                     p1_overlay.paste(purple_ret, reticule_loc)
-                if pops == 2:
+                elif pops == 2:
                     p1_overlaynum.paste(two, reticule_loc)
-                if pops == 3:
+                elif pops == 3:
                     p1_overlaynum.paste(three, reticule_loc)
-                if pops == 4:
+                elif pops == 4:
                     p1_overlaynum.paste(four, reticule_loc)
-                if pops == 5:
+                elif pops == 5:
                     p1_overlaynum.paste(five, reticule_loc)
-                if pops == 6:
+                elif pops == 6:
                     p1_overlaynum.paste(six, reticule_loc)
-                if pops == 7:
+                elif pops == 7:
                     p1_overlaynum.paste(seven, reticule_loc)
-                if pops == 8:
+                elif pops == 8:
                     p1_overlaynum.paste(eight, reticule_loc)
-                if pops == 9:
+                elif pops == 9:
                     p1_overlaynum.paste(nine, reticule_loc)
-                if pops >= 10:
+                elif pops >= 10:
                     p1_overlaynum.paste(death, reticule_loc)
                 numlines_p1 = numlines_p1 + 1
         if numlines_p1 < 6:
@@ -177,31 +178,31 @@ if __name__ == '__main__':
                                 col_rightedge, row_bottomedge)
                 if color[2] == 'R':
                     p2_overlay.paste(red_ret, reticule_loc)
-                if color[2] == 'G':
+                elif color[2] == 'G':
                     p2_overlay.paste(green_ret, reticule_loc)
-                if color[2] == 'B':
+                elif color[2] == 'B':
                     p2_overlay.paste(blue_ret, reticule_loc)
-                if color[2] == 'Y':
+                elif color[2] == 'Y':
                     p2_overlay.paste(yellow_ret, reticule_loc)
-                if color[2] == 'P':
+                elif color[2] == 'P':
                     p2_overlay.paste(purple_ret, reticule_loc)
-                if pops == 2:
+                elif pops == 2:
                     p2_overlaynum.paste(two, reticule_loc)
-                if pops == 3:
+                elif pops == 3:
                     p2_overlaynum.paste(three, reticule_loc)
-                if pops == 4:
+                elif pops == 4:
                     p2_overlaynum.paste(four, reticule_loc)
-                if pops == 5:
+                elif pops == 5:
                     p2_overlaynum.paste(five, reticule_loc)
-                if pops == 6:
+                elif pops == 6:
                     p2_overlaynum.paste(six, reticule_loc)
-                if pops == 7:
+                elif pops == 7:
                     p2_overlaynum.paste(seven, reticule_loc)
-                if pops == 8:
+                elif pops == 8:
                     p2_overlaynum.paste(eight, reticule_loc)
-                if pops == 9:
+                elif pops == 9:
                     p2_overlaynum.paste(nine, reticule_loc)
-                if pops >= 10:
+                elif pops >= 10:
                     p2_overlaynum.paste(death, reticule_loc)
                 numlines_p2 = numlines_p2 + 1
         if numlines_p2 < 6:
