@@ -2,40 +2,60 @@ import json
 import numpy as np
 import os.path
 import mss
-from PIL import Image
-from PIL import ImageStat
+from calibrate_scrn import cell_height, cell_width
+from PIL import Image, ImageStat, ImageOps, ImageDraw
 
 # Current directory
 directory = os.path.dirname(os.path.abspath(__file__))
 
-# Function that crops a field down to each cell
-def getCellColors(field):
+# Isolate a Puyo. field = field image, rowcol = (row, col)
+# This function doesn't use zero indexed positions...
+def isolatePuyo(field, row, col, show = False):
+    left = cell_width * (col - 1)
+    right = cell_width * col
+    up = cell_height * (row - 1)
+    down = cell_height * row
+    box = (left, up, right, down)
+    puyo = field.crop(box)
+    
+    if show is True:
+        puyo.show()
+
+    return(puyo)
+
+# Get RGB of one cell
+def getCellRGB(field, row, col):
+    puyo = isolatePuyo(field, row, col)
+
+    # Only calculate mean for an ellipse inside the cell, to avoid
+    # the mean getting thrown off by character backgrounds.
+    size = (cell_width, cell_height)
+    puyo_ellipse = Image.new('L', size, 0)
+    draw = ImageDraw.Draw(puyo_ellipse)
+    draw.ellipse((0, cell_height * 0.1) + (cell_width, cell_height), fill = 255)
+    color = ImageStat.Stat(puyo, mask=puyo_ellipse).mean
+    return(color)
+
+
+# Get RGB triplet for all cells
+def getFieldRGB(field):
     rows = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
     cols = [1, 2, 3, 4, 5, 6]
-    cellwidth = field.width / 6
-    cellheight = field.height / 12
 
     # Isolate a Puyo
     colordata = []
     for row in rows:
         rowdata = []
         for col in cols:
-            left = cellwidth * (col - 1)
-            right = cellwidth * col
-            up = cellheight * (row - 1)
-            down = cellheight * row
-            box = (left, up, right, down)
-            region = field.crop(box)
-            color = ImageStat.Stat(region).mean
+            color = getCellRGB(field, row, col)
             rowdata.append(color)
         colordata.append(rowdata)
     return colordata
 
-
 ## Calibrate Puyo colors using a sample field with all 5 colors and ojama.
 if __name__ == '__main__':
     test_field = Image.open(directory + '/img/calibration/test_field.png')
-    color_data = getCellColors(test_field)
+    color_data = getFieldRGB(test_field)
     # Manually identify the Puyo colors using zero-indexed matrix coord
     # Top row with the Red X = 0.
     # Left most column = 0.
@@ -93,7 +113,6 @@ RGB_data = json.load(open("puyo_settings.json"))['RGB_data']
 
 
 # Guess a cell's color by referencing the above RGB triplets
-# Guess a cell's color by referencing the above RGB triplets
 def getPuyoColor(puyo, threshold=0.2):
     LL = 1 - threshold  # lower limit
     UL = 1 + threshold  # upper limit
@@ -127,7 +146,7 @@ def getPuyoColor(puyo, threshold=0.2):
 
 # Guess cell colors for a whole field
 def getFieldPuyoColors(field):
-    color_data = getCellColors(field)
+    color_data = getFieldRGB(field)
     matrix = np.array([['0', '0', '0', '0', '0', '0'],
                        ['0', '0', '0', '0', '0', '0'],
                        ['0', '0', '0', '0', '0', '0'],

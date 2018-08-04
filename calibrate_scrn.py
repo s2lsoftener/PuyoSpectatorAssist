@@ -30,7 +30,7 @@ with mss.mss() as sct:
         'board': {'top': 115, 'left': 1194, 'width': 432, 'height': 805},
         'next': {'top': 115, 'left': 988, 'width': 150, 'height': 285},
         'score': {'top': 930, 'left': 1194, 'width': 432, 'height': 80},
-        # 'name': {'top': 1020, 'left': 1100, 'width': 605, 'height': 58}
+        'name': {'top': 1020, 'left': 1110, 'width': 610, 'height': 58}
     }
     Player2['next_bit'] = {
         'top': int(round(Player2['next']['top'] + Player2['next']['height'] * 0.05, 0)),
@@ -42,6 +42,13 @@ with mss.mss() as sct:
     print('Player 1 NEXT: ' + str(Player1['next']))
     print('Player 2 Board: ' + str(Player2['board']))
     print('Player 2 NEXT: ' + str(Player2['next']))
+
+    # Set cells
+    cell_width = Player1['board']['width'] / 6
+    cell_height = Player1['board']['height'] / 12
+    print('Cell dimensions: ' + str((cell_width, cell_height)))  # Check for roundoff error
+    cell_width = int(round(cell_width, 0))
+    cell_height = int(round(cell_height, 0))
 
     # Outline game areas for debugging purposes
     outline = Image.open(directory + '/img/calibration/outline.png')
@@ -70,14 +77,7 @@ with mss.mss() as sct:
                                 mask = outline2)
 
     # Board cells.
-    outline2 = Image.open(directory + '/img/calibration/outline2.png')
-    cell_width = Player1['board']['width'] / 6
-    cell_height = Player1['board']['height'] / 12
-    print('Cell dimensions: ' + str((cell_width, cell_height)))  # Check for roundoff error
-    cell_width = int(round(cell_width, 0))
-    cell_height = int(round(cell_height, 0))
     outline2 = outline2.resize((cell_width, cell_height))
-
     for row in range(12):
         for col in range(6):
             monitor.paste(outline2, (Player1['board']['left'] + col * cell_width,

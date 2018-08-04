@@ -6,7 +6,7 @@ import mss
 from PIL import Image
 from PIL import ImageStat
 from calibrate_scrn import Player1, Player2, cell_width, cell_height, win_count
-from calibrate_puyo import getCellColors, RGB_data, getPuyoColor, getFieldPuyoColors
+from calibrate_puyo import getFieldRGB, RGB_data, getPuyoColor, getFieldPuyoColors
 from chainsim import simulateChain, game_colors, exportToPN, applyGravity
 
 directory = os.path.dirname(os.path.abspath(__file__))
@@ -61,6 +61,7 @@ def captureWinCounter():
         sct_img = sct.grab(win_count)
         img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
     return img
+
 
 # Try out chains
 def addSinglePuyos(matrix, color):
