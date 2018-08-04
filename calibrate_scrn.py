@@ -13,27 +13,30 @@ with mss.mss() as sct:
     monitor = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
 
     # Set screen regions (Puyo Puyo Chronicle)
+    win_count = {'top': 900, 'left': 782, 'width': 356, 'height': 50}
     Player1 = {
         'board': {'top': 115, 'left': 294, 'width': 432, 'height': 805},
-        'next': {'top': 115, 'left': 726, 'width': 100, 'height': 200},
-        'score': {'top': 930, 'left': 294, 'width': 432, 'height': 100}
+        'next': {'top': 115, 'left': 782, 'width': 150, 'height': 285},
+        'score': {'top': 930, 'left': 294, 'width': 432, 'height': 80},
+        'name': {'top': 1020, 'left': 210, 'width': 610, 'height': 58}
     }
     Player1['next_bit'] = {
-        'top': int(round(Player1['next']['top'] + Player1['next']['height'] * 0.1, 0)),
-        'left': int(round(Player1['next']['left'] + Player1['next']['width'] * 0.3, 0)),
-        'width': int(round(Player1['next']['width'] * 0.4, 0)),
-        'height': int(round(Player1['next']['height'] * 0.1, 0))
+        'top': int(round(Player1['next']['top'] + Player1['next']['height'] * 0.05, 0)),
+        'left': int(round(Player1['next']['left'] + Player1['next']['width'] * 0.25, 0)),
+        'width': int(round(Player1['next']['width'] * 0.2, 0)),
+        'height': int(round(Player1['next']['height'] * 0.02, 0))
     }
     Player2 = {
         'board': {'top': 115, 'left': 1194, 'width': 432, 'height': 805},
-        'next': {'top': 115, 'left': 1094, 'width': 100, 'height': 200},
-        'score': {'top': 930, 'left': 1194, 'width': 432, 'height': 100}
+        'next': {'top': 115, 'left': 988, 'width': 150, 'height': 285},
+        'score': {'top': 930, 'left': 1194, 'width': 432, 'height': 80},
+        # 'name': {'top': 1020, 'left': 1100, 'width': 605, 'height': 58}
     }
     Player2['next_bit'] = {
-        'top': int(round(Player2['next']['top'] + Player2['next']['height'] * 0.1, 0)),
-        'left': int(round(Player2['next']['left'] + Player2['next']['width'] * 0.3, 0)),
-        'width': int(round(Player2['next']['width'] * 0.5, 0)),
-        'height': int(round(Player2['next']['height'] * 0.1, 0))
+        'top': int(round(Player2['next']['top'] + Player2['next']['height'] * 0.05, 0)),
+        'left': int(round(Player2['next']['left'] + Player2['next']['width'] * 0.57, 0)),
+        'width': int(round(Player2['next']['width'] * 0.2, 0)),
+        'height': int(round(Player2['next']['height'] * 0.02, 0))
     }
     print('Player 1 Board: ' + str(Player1['board']))
     print('Player 1 NEXT: ' + str(Player1['next']))
@@ -59,15 +62,14 @@ with mss.mss() as sct:
     monitor.paste(outline2, (Player2['next_bit']['left'], Player2['next_bit']['top']), mask=outline2)
 
     # Outline player scores. Maybe this'll get used later.
-    outline = Image.open(directory + '/img/calibration/outline.png')
-    # Player 1
-    outline = outline.resize((Player1['score']['width'], Player1['score']['height']))
-    monitor.paste(outline, (Player1['score']['left'], Player1['score']['top']),
-                                mask = outline)
-    monitor.paste(outline, (Player2['score']['left'], Player2['score']['top']),
-                                mask = outline)
+    outline2 = Image.open(directory + '/img/calibration/outline2.png')
+    outline2 = outline2.resize((Player1['score']['width'], Player1['score']['height']))
+    monitor.paste(outline2, (Player1['score']['left'], Player1['score']['top']),
+                                mask = outline2)
+    monitor.paste(outline2, (Player2['score']['left'], Player2['score']['top']),
+                                mask = outline2)
 
-    # Board cell size.
+    # Board cells.
     outline2 = Image.open(directory + '/img/calibration/outline2.png')
     cell_width = Player1['board']['width'] / 6
     cell_height = Player1['board']['height'] / 12
@@ -81,9 +83,6 @@ with mss.mss() as sct:
             monitor.paste(outline2, (Player1['board']['left'] + col * cell_width,
                                     Player1['board']['top'] + row * cell_height),
                                         mask = outline2)
-
-    for row in range(12):
-        for col in range(6):
             monitor.paste(outline2, (Player2['board']['left'] + col * cell_width,
                                     Player2['board']['top'] + row * cell_height),
                                         mask = outline2)
@@ -91,6 +90,18 @@ with mss.mss() as sct:
     print('Writing region outlines to /test/screen_regions.png')
     monitor.save(directory + '/test/screen_regions.png')
 
+    # Name
+    outline2 = Image.open(directory + '/img/calibration/outline2.png')
+    outline2 = outline2.resize((Player1['name']['width'], Player1['name']['height']))
+    monitor.paste(outline2, (Player1['name']['left'], Player1['name']['top']),
+                                mask = outline2)
+    monitor.paste(outline2, (Player2['name']['left'], Player2['name']['top']),
+                                mask = outline2)
+    
+    # Win count
+    outline2 = Image.open(directory + '/img/calibration/outline2.png')
+    outline2 = outline2.resize((win_count['width'], win_count['height']))
+    monitor.paste(outline2, (win_count['left'], win_count['top']), mask=outline2)
 
 if __name__ == '__main__':
     monitor.show()

@@ -5,14 +5,14 @@ import os.path
 import mss
 from PIL import Image
 from PIL import ImageStat
-from calibrate_scrn import Player1, Player2, cell_width, cell_height
+from calibrate_scrn import Player1, Player2, cell_width, cell_height, win_count
 from calibrate_puyo import getCellColors, RGB_data, getPuyoColor, getFieldPuyoColors
 from chainsim import simulateChain, game_colors, exportToPN, applyGravity
 
 directory = os.path.dirname(os.path.abspath(__file__))
 
-# Get field
-def getField(player):
+# Screen capture the player field
+def captureField(player):
     with mss.mss() as sct:
         if player == 1:
             sct_img = sct.grab(Player1['board'])
@@ -22,6 +22,45 @@ def getField(player):
             img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
     return img
 
+# screen capture the NEXT Window
+def captureNEXT(player):
+    with mss.mss() as sct:
+        if player == 1:
+            sct_img = sct.grab(Player1['next'])
+            img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
+        elif player == 2:
+            sct_img = sct.grab(Player2['next'])
+            img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
+    return img
+
+# Screen capture the score
+def captureScore(player):
+    with mss.mss() as sct:
+        if player == 1:
+            sct_img = sct.grab(Player1['score'])
+            img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
+        if player == 2:
+            sct_img = sct.grab(Player2['score'])
+            img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
+    return img
+
+# Screen capture the player name
+def captureName(player):
+    with mss.mss() as sct:
+        if player == 1:
+            sct_img = sct.grab(Player1['name'])
+            img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
+        elif player == 2:
+            sct_img = sct.grab(Player2['next'])
+            img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
+    return img
+
+# Screen capture the win counter
+def captureWinCounter():
+    with mss.mss() as sct:
+        sct_img = sct.grab(win_count)
+        img = Image.frombytes('RGB', sct_img.size, sct_img.bgra, 'raw', 'BGRX')
+    return img
 
 # Try out chains
 def addSinglePuyos(matrix, color):
@@ -97,7 +136,7 @@ if __name__ == '__main__':
     starttime = time.time()
     while True:
         # Player 1, initialize values and images
-        p1_current = getFieldPuyoColors(getField(1))  # Get P1 field
+        p1_current = getFieldPuyoColors(captureField(1))  # Get P1 field
         p1_chaintests = tryPuyos(p1_current)  # Try Puyos in each column & simulate
         p1_chaintext = str('')  # Leftover from an old output method
         p1_overlay = copy.copy(transparent_bg) 
@@ -105,7 +144,7 @@ if __name__ == '__main__':
         numlines_p1 = 0
 
         # Player 2, initialize values and images
-        p2_current = getFieldPuyoColors(getField(2))
+        p2_current = getFieldPuyoColors(captureField(2))
         p2_chaintests = tryPuyos(p2_current)
         p2_chaintext = str('')
         p2_overlay = copy.copy(transparent_bg)
