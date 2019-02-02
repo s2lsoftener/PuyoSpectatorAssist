@@ -3,6 +3,10 @@ https://streamable.com/plh59
 # PuyoSpectatorAssist
 Creates an overlay that identifies potential chains
 
+This version of the PuyoSpectatorAssist program isn't good because the method for updating the overlay involves writing a file to the disk and reading it. When OBS or the web server has to read the image file constantly, it just doesn't load sometimes... Basically, it's janky.
+
+See my rewritten Python program at: https://github.com/s2lsoftener/PuyoSpectatorAssist2
+
 ## Instructions
 1. Whatever program you're using to capture Puyo Chronicle gameplay with, set it to full screen or get an estimate of its position on the screen.
 2. Edit your screen regions at the top of calibrate_scrn.py
